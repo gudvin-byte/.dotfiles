@@ -13,14 +13,36 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  { 'onsails/lspkind.nvim' },
 
-  -- Color scheme
-  { "catppuccin/nvim", as = "catppuccin" },
+  { 'tpope/vim-fugitive' },
 
-  -- Fuzzy Finder (files, lsp, etc)
-  { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+  {
+      "ziontee113/icon-picker.nvim",
+      config = function()
+          require("icon-picker").setup({ disable_legacy_commands = true })
+      end
+  },
 
-  -- File tree
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
+
+  {
+    "epwalsh/obsidian.nvim",
+    version = "*",
+    lazy = true,
+    ft = "markdown",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+  },
+
+  { 'folke/zen-mode.nvim' },
+
   {
     "nvim-tree/nvim-tree.lua",
     version = "*",
@@ -29,11 +51,69 @@ require('lazy').setup({
       "nvim-tree/nvim-web-devicons",
     },
     config = function()
-        require("nvim-tree").setup {}
+        require("nvim-tree").setup {
+          sort = { sorter = "case_sensitive" },
+          view = {
+            width = 30,
+            adaptive_size = true,
+          },
+          renderer = { group_empty = true },
+          filters = { dotfiles = false },
+        }
       end,
   },
 
-  -- Save and load buffers (a session) automatically for each folder
+  { "tpope/vim-surround" },
+
+  { "ryanoasis/vim-devicons" },
+
+  {
+    "goolord/alpha-nvim",
+    config = function ()
+      local alpha = require'alpha'
+      local dashboard = require'alpha.themes.dashboard'
+      dashboard.section.header.val = {
+        [[        ___                     ___          _____         ]],
+        [[       /  /\      ___          /__/\        /  /::\        ]],
+        [[      /  /:/_    /  /\         \  \:\      /  /:/\:\       ]],
+        [[     /  /:/ /\  /  /:/          \  \:\    /  /:/  \:\      ]],
+        [[    /  /:/ /:/ /__/::\      _____\__\:\  /__/:/ \__\:|     ]],
+        [[   /__/:/ /:/  \__\/\:\__  /__/::::::::\ \  \:\ /  /:/     ]],
+        [[   \  \:\/:/      \  \:\/\ \  \:\~~\~~\/  \  \:\  /:/      ]],
+        [[    \  \::/        \__\::/  \  \:\  ~~~    \  \:\/:/       ]],
+        [[     \  \:\        /__/:/    \  \:\         \  \::/        ]],
+        [[      \  \:\       \__\/      \  \:\         \__\/         ]],
+        [[       \__\/                   \__\/                       ]],
+        [[        ___                       ___           ___        ]],
+        [[       /  /\                     /  /\         /__/\       ]],
+        [[      /  /:/_                   /  /::\       _\_ \:\      ]],
+        [[     /  /:/ /\  ___     ___    /  /:/\:\     /__/\ \:\     ]],
+        [[    /  /:/ /:/ /__/\   /  /\  /  /:/  \:\   _\_ \:\ \:\    ]],
+        [[   /__/:/ /:/  \  \:\ /  /:/ /__/:/ \__\:\ /__/\ \:\ \:\   ]],
+        [[   \  \:\/:/    \  \:\  /:/  \  \:\ /  /:/ \  \:\ \:\/:/   ]],
+        [[    \  \::/      \  \:\/:/    \  \:\  /:/   \  \:\ \::/    ]],
+        [[     \  \:\       \  \::/      \  \:\/:/     \  \:\/:/     ]],
+        [[      \  \:\       \__\/        \  \::/       \  \::/      ]],
+        [[       \__\/                     \__\/         \__\/       ]],
+      }
+      dashboard.section.buttons.val = {
+        dashboard.button("e", "  New file", "<cmd>ene <CR>"),
+        dashboard.button("SPC f o", "󰈞  Recently opened files"),
+        dashboard.button( "q", "󰅚  Quit NVIM" , ":qa<CR>"),
+      }
+      local handle = io.popen('fortune')
+      local fortune = handle:read("*a")
+      handle:close()
+      dashboard.section.footer.val = fortune
+
+      dashboard.config.opts.noautocmd = true
+
+      vim.cmd[[autocmd User AlphaReady echo 'ready']]
+
+      alpha.setup(dashboard.config)
+    end
+  },
+
   {
     'rmagatti/auto-session',
     config = function()
@@ -44,7 +124,19 @@ require('lazy').setup({
     end
   },
 
-  -- Comment code
+
+  {
+    'rmagatti/goto-preview',
+    config = function() require('goto-preview').setup {} end
+  },
+
+  { "catppuccin/nvim", as = "catppuccin" },
+
+  {
+    "windwp/nvim-autopairs",
+      config = function() require("nvim-autopairs").setup {} end
+  },
+
   {
     'terrortylor/nvim-comment',
     config = function()
@@ -52,113 +144,104 @@ require('lazy').setup({
     end
   },
 
-  -- Visualize buffers as tabs
   {'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons'},
 
-  -- Preview markdown live in web browser
-  {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle" },
-    ft = { "markdown" },
-    build = function() vim.fn["mkdp#util#install"]() end,
-  },
+  -- { "chrisgrieser/nvim-spider" },
 
-  -- LSP zero
   {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v3.x',
-    lazy = true,
-    config = false,
-    init = function()
-      -- Disable automatic setup, we are doing it manually
-      vim.g.lsp_zero_extend_cmp = 0
-      vim.g.lsp_zero_extend_lspconfig = 0
-    end,
-  },
-  {
-    'williamboman/mason.nvim',
-    lazy = false,
-    config = true,
-  },
-
-  -- Autocompletion
-  {
-    'hrsh7th/nvim-cmp',
-    event = 'InsertEnter',
-    dependencies = {
-      {'L3MON4D3/LuaSnip'},
-    },
+    "folke/noice.nvim",
     config = function()
-      -- Here is where you configure the autocompletion settings.
-      local lsp_zero = require('lsp-zero')
-      lsp_zero.extend_cmp()
-
-      -- And you can configure cmp even more, if you want to.
-      local cmp = require('cmp')
-      local cmp_action = lsp_zero.cmp_action()
-
-      cmp.setup({
-        formatting = lsp_zero.cmp_format({details = true}),
-        mapping = cmp.mapping.preset.insert({
-          ['<C-Space>'] = cmp.mapping.complete(),
-          ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-d>'] = cmp.mapping.scroll_docs(4),
-          ['<C-f>'] = cmp_action.luasnip_jump_forward(),
-          ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-        })
-      })
-    end
-  },
-
-  -- LSP
-  {
-    'neovim/nvim-lspconfig',
-    cmd = {'LspInfo', 'LspInstall', 'LspStart'},
-    event = {'BufReadPre', 'BufNewFile'},
-    dependencies = {
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'williamboman/mason-lspconfig.nvim'},
-    },
-    config = function()
-      -- This is where all the LSP shenanigans will live
-      local lsp_zero = require('lsp-zero')
-      lsp_zero.extend_lspconfig()
-
-      --- if you want to know more about lsp-zero and mason.nvim
-      --- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
-      lsp_zero.on_attach(function(client, bufnr)
-        -- see :help lsp-zero-keybindings
-        -- to learn the available actions
-        lsp_zero.default_keymaps({buffer = bufnr})
-      end)
-
-      require('mason-lspconfig').setup({
-        ensure_installed = {
-          'pyright',  -- python
-          'tsserver', -- js, ts
+      require("noice").setup({
+        -- add any options here
+        routes = {
+          {
+            filter = {
+              event = 'msg_show',
+              any = {
+                { find = '%d+L, %d+B' },
+                { find = '; after #%d+' },
+                { find = '; before #%d+' },
+                { find = '%d fewer lines' },
+                { find = '%d more lines' },
+              },
+            },
+            opts = { skip = true },
+          }
         },
-        handlers = {
-          lsp_zero.default_setup,
-          lua_ls = function()
-            -- (Optional) Configure lua language server for neovim
-            local lua_opts = lsp_zero.nvim_lua_ls()
-            require('lspconfig').lua_ls.setup(lua_opts)
-          end,
-        }
+        presets = {
+          bottom_search = true, -- use a classic bottom cmdline for search
+          command_palette = true, -- position the cmdline and popupmenu together
+          long_message_to_split = true, -- long messages will be sent to a split
+          lsp_doc_border = false, -- add a border to hover docs and signature help
+        },
       })
+    end,
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+    --   "rcarriga/nvim-notify",
+    }
+  },
 
-      -- Python environment
-      local util = require("lspconfig/util")
-      local path = util.path
-      require('lspconfig').pyright.setup {
-        on_attach = on_attach,
-        capabilities = capabilities,
-        before_init = function(_, config)
-          default_venv_path = path.join(vim.env.HOME, "virtualenvs", "nvim-venv", "bin", "python")
-          config.settings.python.pythonPath = default_venv_path
-        end,
-      }
-    end
-  }
+  {
+    "kawre/leetcode.nvim",
+    build = ":TSUpdate html",
+    dependencies = {
+        "nvim-telescope/telescope.nvim",
+        "nvim-lua/plenary.nvim", -- required by telescope
+        "MunifTanjim/nui.nvim",
 
+        -- optional
+        "nvim-treesitter/nvim-treesitter",
+        -- "rcarriga/nvim-notify",
+        -- "nvim-tree/nvim-web-devicons",
+    },
+    opts = {
+      lang = "python",
+    },
+  },
+
+  { -- LSP Configuration & Plugins
+    'neovim/nvim-lspconfig',
+    dependencies = {
+      -- Automatically install LSPs to stdpath for neovim
+      'williamboman/mason.nvim',
+      'williamboman/mason-lspconfig.nvim',
+
+      -- Useful status updates for LSP
+      'j-hui/fidget.nvim',
+    }
+  },
+
+  { -- Autocompletion
+    'hrsh7th/nvim-cmp',
+    dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
+  },
+
+  { -- Highlight, edit, and navigate code
+    'nvim-treesitter/nvim-treesitter',
+    build = function()
+      pcall(require('nvim-treesitter.install').update { with_sync = true })
+    end,
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    }
+  },
+
+   -- Fancier statusline
+  { 'nvim-lualine/lualine.nvim' },
+
+  -- Fuzzy Finder (files, lsp, etc)
+  { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+  { 'nvim-telescope/telescope-symbols.nvim' },
+
+  { "folke/twilight.nvim", opts = { } },
+
+  -- Treesitter playground
+  { "nvim-treesitter/nvim-treesitter" },
+  { "nvim-treesitter/playground" },
 })
+
