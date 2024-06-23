@@ -47,6 +47,9 @@ vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
 -- yank line to clipboard
 vim.keymap.set("n", "<leader>Y", [["+Y]])
 
+-- paste from clipboard
+-- vim.keymap.set("n", "<leader>p", [["+p]])
+
 -- delete without yanking
 vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 

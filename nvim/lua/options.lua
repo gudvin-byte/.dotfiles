@@ -21,6 +21,7 @@ vim.opt.swapfile = false -- do not use a swap file for the buffer
 vim.opt.backup = false -- do not keep a backup file
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir" -- set directory where undo files are stored
 vim.opt.undofile = true -- save undo history to a file
+vim.opt.clipboard = 'unnamedplus' -- paste from external programs
 
 vim.opt.hlsearch = false -- do not highlight all matches on previous search pattern
 vim.opt.incsearch = true -- incrementally highlight searches as you type

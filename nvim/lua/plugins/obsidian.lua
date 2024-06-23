@@ -11,7 +11,7 @@ require("obsidian").setup({
 
   disable_frontmatter = true,
   templates = {
-      subdir = "templates",
+      subdir = "Templates",
       date_format = "%Y-%m-%d",
       time_format = "%H:%M:%S",
   },
@@ -46,7 +46,7 @@ require("obsidian").setup({
     --   action = function()
     --     return require("obsidian").util.toggle_checkbox()
     --   end,
-    --   opts = { buffer = true },
+    --   opts = { buffer  true },
     -- },
   },
   completion = {
